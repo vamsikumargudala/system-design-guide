@@ -1,0 +1,15 @@
+# environments
+.env
+.env.local
+.env.development.local
+.env.test.local
+
+# draft designs
+.draft-designs
+
+# logs
+logs
+
+# temporary files
+/tmp/docs
+
