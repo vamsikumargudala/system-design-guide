@@ -87,8 +87,19 @@ class Book:
         - Update class variables
         - Set initial availability status
         """
-        # Your implementation here
-        pass
+        if not title or not author or not isbn:
+            raise ValueError("Title, author, and ISBN must be non-empty strings.")
+        if len(isbn) != 17 or not all(c.isdigit() or c == '-' for c in isbn):
+            raise ValueError("ISBN must be a valid format (13 digits with hyphens).")
+        self.title = title
+        self.author = author
+        self.isbn = isbn
+        self.book_id = Book.book_id_counter
+        self.is_available = True
+        self.borrowed_by = None
+        self.borrowed_date = None
+        Book.book_id_counter += 1
+        Book.total_books += 1
     
     def borrow_book(self, borrower_name: str) -> str:
         """
@@ -101,8 +112,14 @@ class Book:
         - Set borrowed_date to current date
         - Return appropriate message
         """
-        # Your implementation here
-        pass
+        if not borrower_name:
+            raise ValueError("Borrower name must be a non-empty string.")
+        if not self.is_available:
+            return f"'{self.title}' is already borrowed by {self.borrowed_by}"
+        self.is_available = False
+        self.borrowed_by = borrower_name
+        self.borrowed_date = datetime.now().strftime("%Y-%m-%d")
+        return f"'{self.title}' borrowed by {borrower_name} on {self.borrowed_date}"
     
     def return_book(self) -> str:
         """
@@ -114,8 +131,13 @@ class Book:
         - Mark as available
         - Return appropriate message
         """
-        # Your implementation here
-        pass
+        if self.is_available:
+            return f"'{self.title}' is not currently borrowed."
+        self.is_available = True
+        self.borrowed_by = None
+        self.borrowed_date = None
+        return f"'{self.title}' has been returned and is now available."
+        
     
     def get_book_info(self) -> str:
         """
@@ -126,18 +148,20 @@ class Book:
         - Show availability status
         - If borrowed, show who borrowed it and when
         """
-        # Your implementation here
-        pass
+        availability = "Yes" if self.is_available else "No"
+        borrowed_info = f" | Borrowed by: {self.borrowed_by} on {self.borrowed_date}" if not self.is_available else ""
+        return (f"Book ID: {self.book_id} | Title: '{self.title}' | Author: '{self.author}' | "
+                f"Available: {availability}{borrowed_info}")
     
     def __str__(self) -> str:
         """Human-readable string representation."""
-        # Your implementation here
-        pass
+        return f"'{self.title}' by {self.author} (ISBN: {self.isbn}) - ID: {self.book_id} - Available: {self.is_available}"
     
     def __repr__(self) -> str:
         """Developer string representation."""
-        # Your implementation here
-        pass
+        return (f"Book(book_id={self.book_id}, title='{self.title}', author='{self.author}', "
+                f"isbn='{self.isbn}', is_available={self.is_available}, "
+                f"borrowed_by={self.borrowed_by}, borrowed_date={self.borrowed_date})")
 
 
 # Test cases for Problem 1
@@ -229,7 +253,6 @@ Expected Behaviors:
 """
 
 class Employee:
-    # Define class variables
     company_name = "TechCorp Solutions"
     total_employees = 0
     employee_id_counter = 1000
@@ -247,8 +270,21 @@ class Employee:
         - Initialize empty performance_ratings list
         - Update class variables
         """
-        # Your implementation here
-        pass
+        if not name:
+            raise ValueError("Name must be a non-empty string.")
+        if department not in Employee.departments:
+            raise ValueError(f"Department must be one of {Employee.departments}.")
+        if salary <= 0:
+            raise ValueError("Salary must be a positive number.")
+        self.name = name
+        self.department = department
+        self.salary = salary
+        self.employee_id = Employee.employee_id_counter
+        self.hire_date = datetime.now().strftime("%Y-%m-%d")
+        self.is_active = True
+        self.performance_rating = []
+        Employee.employee_id_counter += 1
+        Employee.total_employees += 1
     
     def give_raise(self, amount: float) -> str:
         """
@@ -260,8 +296,12 @@ class Employee:
         - Update salary
         - Return success message with new salary
         """
-        # Your implementation here
-        pass
+        if amount <= 0:
+            raise ValueError("Raise amount must be a positive number.")
+        if not self.is_active:
+            return f"Cannot give raise to {self.name} as they are no longer active."
+        self.salary += amount
+        return f"{self.name} has received a raise of ${amount}. New salary: ${self.salary:.2f}"
     
     def change_department(self, new_department: str) -> str:
         """
@@ -273,8 +313,12 @@ class Employee:
         - Update department
         - Return success message
         """
-        # Your implementation here
-        pass
+        if not self.is_active:
+            return f"Cannot change department for {self.name} as they are no longer active."
+        if new_department not in Employee.departments:
+            raise ValueError(f"Department must be one of {Employee.departments}.")
+        self.department = new_department
+        return f"{self.name} has been transferred to {self.department} department."
     
     def add_performance_rating(self, rating: int) -> str:
         """
@@ -286,8 +330,12 @@ class Employee:
         - Add to performance_ratings list
         - Return success message
         """
-        # Your implementation here
-        pass
+        if not self.is_active:
+            return f"Cannot add rating for {self.name} as they are no longer active."
+        if rating < 1 or rating > 5:
+            raise ValueError("Rating must be between 1 and 5.")
+        self.performance_rating.append(rating)
+        return f"Rating {rating} added for {self.name}. Total ratings: {len(self.performance_rating)}"
     
     def calculate_average_rating(self) -> Optional[float]:
         """
@@ -298,8 +346,10 @@ class Employee:
         - Calculate and return average of all ratings
         - Round to 2 decimal places
         """
-        # Your implementation here
-        pass
+        if not self.performance_rating:
+            return None
+        average = sum(self.performance_rating) / len(self.performance_rating)
+        return round(average, 2)
     
     def get_employee_details(self) -> str:
         """
@@ -310,8 +360,11 @@ class Employee:
         - Include average rating if available
         - Show active/terminated status
         """
-        # Your implementation here
-        pass
+        status = "Active" if self.is_active else "Terminated"
+        average_rating = self.calculate_average_rating()
+        avg_rating_str = f" | Average Rating: {average_rating}" if average_rating is not None else ""
+        return (f"Employee ID: {self.employee_id} | Name: {self.name} | Department: {self.department} | "
+                f"Salary: ${self.salary:.2f} | Hire Date: {self.hire_date} | Status: {status}{avg_rating_str}")
     
     def terminate(self) -> str:
         """
@@ -321,18 +374,22 @@ class Employee:
         - Mark employee as inactive
         - Return confirmation message
         """
-        # Your implementation here
-        pass
+        if not self.is_active:
+            return f"{self.name} is already terminated."
+        self.is_active = False
+        return f"{self.name} has been terminated from the company."
     
     def __str__(self) -> str:
         """Human-readable representation."""
-        # Your implementation here
-        pass
+        return (f"{self.name} (ID: {self.employee_id}) - {self.department} Department - "
+                f"Salary: ${self.salary:.2f} - Hired on: {self.hire_date} - Status: {'Active' if self.is_active else 'Terminated'}")
     
     def __repr__(self) -> str:
         """Developer representation."""
-        # Your implementation here
-        pass
+        return (f"Employee(employee_id={self.employee_id}, name='{self.name}', "
+                f"department='{self.department}', salary={self.salary}, "
+                f"hire_date='{self.hire_date}', is_active={self.is_active}, "
+                f"performance_ratings={self.performance_rating})")
 
 
 # Test cases for Problem 2
@@ -443,8 +500,20 @@ class SocialMediaPost:
        - Initialize empty comments list
        - Update class variables
        """
-       # Your implementation here
-       pass
+       if not author or ' ' in author:
+            raise ValueError("Author must be a non-empty string without spaces.")
+       if not content or len(content) > 280:
+            raise ValueError("Content must be a non-empty string with max 280 characters.")
+       self.author = author
+       self.content = content
+       self.post_id = SocialMediaPost.post_id_counter
+       self.timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+       self.likes_count = 0
+       self.comments = []
+       self.is_public = is_public
+       self.hashtags = self._extract_hashtags(content)
+       SocialMediaPost.post_id_counter += 1
+       SocialMediaPost.total_posts += 1
    
    def add_like(self) -> str:
        """
@@ -454,8 +523,8 @@ class SocialMediaPost:
        - Increment likes_count
        - Return success message with new count
        """
-       # Your implementation here
-       pass
+       self.likes_count += 1
+       return f"Post {self.post_id} by {self.author} now has {self.likes_count} likes."
    
    def remove_like(self) -> str:
        """
@@ -465,8 +534,8 @@ class SocialMediaPost:
        - Decrement likes_count (minimum 0)
        - Return message with new count
        """
-       # Your implementation here
-       pass
+       self.likes_count = max(0, self.likes_count - 1)
+       return f"Post {self.post_id} by {self.author} now has {self.likes_count} likes."
    
    def add_comment(self, commenter: str, comment_text: str) -> str:
        """
@@ -478,8 +547,8 @@ class SocialMediaPost:
        - Add to comments list in format "username: comment text"
        - Return success message
        """
-       # Your implementation here
-       pass
+       self.comments.append(f"{commenter}: {comment_text}")
+       return f"Comment added by {commenter} on post {self.post_id}: '{comment_text}'"
    
    def edit_content(self, new_content: str) -> str:
        """
@@ -491,8 +560,11 @@ class SocialMediaPost:
        - Re-extract hashtags
        - Return success message
        """
-       # Your implementation here
-       pass
+       if not new_content or len(new_content) > 280:
+           raise ValueError("New content must be a non-empty string with max 280 characters.")
+       self.content = new_content
+       self.hashtags = self._extract_hashtags(new_content)
+       return f"Post {self.post_id} content updated successfully."
    
    def _extract_hashtags(self, text: str) -> list[str]:
        """
@@ -506,18 +578,22 @@ class SocialMediaPost:
        
        Hint: Use string methods or regex to find hashtags
        """
-       # Your implementation here
-       pass
+       hashtags = set()
+       words = text.split()
+       for word in words:
+           if word.startswith('#'):
+               hashtags.add(word.lower())
+       return list(hashtags)
    
    def make_private(self) -> str:
        """Make the post private."""
-       # Your implementation here
-       pass
+       self.is_public = False
+       return f"Post {self.post_id} by {self.author} is now private."
    
    def make_public(self) -> str:
        """Make the post public."""
-       # Your implementation here
-       pass
+       self.is_public = True
+       return f"Post {self.post_id} by {self.author} is now public."
    
    def get_post_summary(self) -> str:
        """
@@ -529,18 +605,24 @@ class SocialMediaPost:
        - Show recent comments (last 3)
        - Display hashtags
        """
-       # Your implementation here
-       pass
+       recent_comments = self.comments[-3:] if len(self.comments) > 3 else self.comments
+       comments_str = "\n".join(recent_comments) if recent_comments else "No comments yet."
+       hashtags_str = ", ".join(self.hashtags) if self.hashtags else "No hashtags."
+       return (f"Post ID: {self.post_id} | Author: {self.author} | Timestamp: {self.timestamp}\n"
+                f"Content: {self.content}\nLikes: {self.likes_count} | Public: {'Yes' if self.is_public else 'No'}\n"
+                f"Hashtags: {hashtags_str}\nComments:\n{comments_str}")
    
    def __str__(self) -> str:
        """Human-readable representation."""
-       # Your implementation here
-       pass
+       return (f"Post ID: {self.post_id} | Author: {self.author} | Content: {self.content[:50]}... "
+                f"| Likes: {self.likes_count} | Public: {'Yes' if self.is_public else 'No'}")
    
    def __repr__(self) -> str:
        """Developer representation."""
-       # Your implementation here
-       pass
+       return (f"SocialMediaPost(post_id={self.post_id}, author='{self.author}', "
+                f"content='{self.content[:50]}...', timestamp='{self.timestamp}', "
+                f"likes_count={self.likes_count}, is_public={self.is_public}, "
+                f"hashtags={self.hashtags}, comments={self.comments})")
 
 
 # Test cases for Problem 3
@@ -576,7 +658,7 @@ def test_social_media_post():
        print(f"Error testing SocialMediaPost class: {e}")
 
 # Uncomment to test Problem 3
-# test_social_media_post()
+test_social_media_post()
 
 
 # =============================================================================
@@ -647,7 +729,6 @@ Expected Advanced Features:
 """
 
 class Course:
-   # Define class variables
    university_name = "Python University"
    total_courses = 0
    course_code_counter = 1000
@@ -662,8 +743,33 @@ class Course:
        This is the most complex constructor in our exercises.
        TODO: Implement with full validation and setup
        """
-       # Your implementation here - this is the challenge!
-       pass
+       if not title or not isinstance(title, str):
+           raise ValueError("Title must be a non-empty string.")
+       if department not in Course.valid_departments:
+           raise ValueError(f"Department must be one of {Course.valid_departments}.")
+       if not isinstance(credits, int) or not (1 <= credits <= 6):
+           raise ValueError("Credits must be an integer between 1 and 6.")
+       if instructor and not isinstance(instructor, str):
+           raise ValueError("Instructor must be a non-empty string.")
+       if semester not in Course.semester_options:
+           raise ValueError(f"Semester must be one of {Course.semester_options}.")
+       if not isinstance(year, int) or not (datetime.now().year - 2 <= year <= datetime.now().year + 2):
+           raise ValueError("Year must be within 2 years of the current year.")
+       if not isinstance(max_capacity, int) or max_capacity <= 0:
+           raise ValueError("Max capacity must be a positive integer.")
+       self.title = title
+       self.department = department
+       self.credits = credits
+       self.instructor = instructor
+       self.semester = semester
+       self.year = year
+       self.max_capacity = max_capacity
+       self.course_code = f"{department}{Course.course_code_counter}"
+       self.enrolled_students = []
+       self.waitlist = []
+       self.prerequisites = []
+       Course.total_courses += 1
+       Course.course_code_counter += 1
    
    def enroll_student(self, student_name: str) -> str:
        """

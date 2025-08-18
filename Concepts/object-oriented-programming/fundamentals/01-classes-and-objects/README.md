@@ -57,9 +57,9 @@ By the end of this lesson, you will understand:
 ### Python Special Methods (Dunder Methods)
 
 #### `__init__` Method (Constructor)
-**What**: Special method that initializes a new object when it's created
-**Why**: Set up initial state and perform setup operations
-**When**: Called automatically when you create an object
+- **What**: Special method that initializes a new object when it's created
+- **Why**: Set up initial state and perform setup operations
+- **When**: Called automatically when you create an object
 
 ```python
 def __init__(self, parameter1, parameter2):
@@ -72,19 +72,19 @@ def __init__(self, parameter1, parameter2):
 ```
 
 #### `self` Parameter
-**What**: Reference to the current instance of the class
-**Why**: Python needs to know which object you're working with
-**How**: Always the first parameter in instance methods
+- **What**: Reference to the current instance of the class
+- **Why**: Python needs to know which object you're working with
+- **How**: Always the first parameter in instance methods
 
 #### `__str__` Method (String Representation)
-**What**: Defines how the object appears when printed
-**Why**: Make objects human-readable for debugging
-**When**: Called by `print()` and `str()` functions
+- **What**: Defines how the object appears when printed
+- **Why**: Make objects human-readable for debugging
+- **When**: Called by `print()` and `str()` functions
 
 #### `__repr__` Method (Developer Representation)
-**What**: Defines unambiguous string representation for developers
-**Why**: Helpful for debugging and development
-**When**: Called by `repr()` function and in interactive shells
+- **What**: Defines unambiguous string representation for developers
+- **Why**: Helpful for debugging and development
+- **When**: Called by `repr()` function and in interactive shells
 
 ## 💻 Code Examples
 
